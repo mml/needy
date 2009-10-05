@@ -1,0 +1,71 @@
+Library to help you know which projects are getting a bit stale.
+
+Sometimes it slowly creeps up on you that you haven't done anything with X in
+a few weeks... or even months, and next thing you know getting started again
+seems somewhat hard.  I am pretty prone to this kind of problem; I guess that
+part of my brain doesn't work very well.  So this is a simple attempt to
+factor that part of my brain out in to some code.
+
+Sample output:
+
+             $FRIEND  475.0 hours
+              $BUDDY  256.6 hours
+                  lj  235.0 hours
+                  ol  191.9 hours
+              tumblr  167.6 hours
+               m0x65   94.6 hours
+              flickr   46.8 hours
+             twitter   24.3 hours
+                $GIG   22.0 hours
+                $PAL    1.1 hours
+
+USAGE
+~~~~~
+
+Put something like the below in ~/bin/needy
+
+  #!/usr/bin/env ruby
+  require 'rubygems'
+  require 'needy'
+
+  include Needy
+
+  # Your gmail account
+  gmail :username => 'USERNAME@gmail.com', :password => 'PASSWORD' do
+    recipient :aofriend, 'an.old.friend'  # List one recipient per line
+    recipient :buddy                      # When was the last time you emailed buddy?
+    recipient :pal
+    recipient 'client.com'
+  end
+
+  # LiveJournal
+  feed :lj, 'http://USERNAME.livejournal.com/data/atom'
+ 
+  # Twitter
+  feed :twitter, 'http://twitter.com/statuses/user_timeline/SOME_NUMBER.rss'
+
+  # flickr
+  feed :flickr,
+    'http://api.flickr.com/services/feeds/photos_public.gne?id=SOME_NUMBER&lang=en-us&format=atom'
+
+  # Tumblr
+  feed :tumblr, 'http://TUMBLR_URL/rss'
+
+  # A git-svn setup, with other authors.
+  git :ep, '~/s/ep', 'remotes/git-svn' do |repo|
+    repo.exec 'svn fetch'
+    repo.author 'mattl'
+  end
+
+  # A git project I sometimes work on from other places
+  git :ol, '~/s/ol', 'origin/master' do |repo|
+    repo.exec 'fetch'
+  end
+
+  # A git project I never need to fetch
+  git :m0x65, '~/s/m0x65', 'prod/master'
+
+  # Print a line for each project
+  whens.sort_by{|k,v| v}.each do |k,v|
+    printf "%20.20s %6.1f hours\n", k, (Time.now - Time.at(v))/60/60
+  end
