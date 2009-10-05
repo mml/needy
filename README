@@ -19,6 +19,18 @@ Sample output:
                 $GIG   22.0 hours
                 $PAL    1.1 hours
 
+INSTALLATION
+~~~~~~~~~~~~
+
+Make sure you have gemcutter.org in your list of gem sources
+
+  gem install gemcutter
+  gem tumble
+
+then just install the gem
+
+  gem install needy
+
 USAGE
 ~~~~~
 
