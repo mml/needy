@@ -56,7 +56,12 @@ module Needy
   end
 
   def set abbrev, val
-    @@when[abbrev.to_s] = val
+    @@when[abbrev.to_s] = val unless (@@when[abbrev.to_s] and @@when[abbrev.to_s] > val)
+  end
+
+  def ichats dir = "#{ENV['HOME']}/Documents/iChats"
+    i = Needy::IChat.new(dir, self)
+    yield(i)
   end
 
   class Git
@@ -84,6 +89,30 @@ module Needy
 
     def author name
       self.log_opt += " --author=#{name}"
+    end
+  end
+
+  class IChat
+    attr_accessor :dir, :target
+
+    def initialize dir, target
+      self.dir = dir
+      self.target = target
+    end
+
+    def when name
+      Dir["#{dir}/*"].sort.reverse.each do |dir|
+        Dir["#{dir}/*.ichat"].each do |path|
+          if path =~ /\/#{name} on /
+            return File.mtime(path)
+          end
+        end
+      end
+      return Time.at(0)
+    end
+
+    def chatter abbrev, name
+      target.thr { target.set abbrev, self.when(name) }
     end
   end
 end
