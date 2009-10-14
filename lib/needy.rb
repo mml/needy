@@ -10,24 +10,14 @@ module Needy
   @@threads = []
 
   def imap_server host, args
-    args = { :port => 143, :ssl  => false }.merge(args)
-    @@server = Net::IMAP.new host, args[:port], args[:ssl]
-    @@server.login args[:username], args[:password]
-    @@server.select args[:folder] if args[:folder]
-    thr { yield }
+    i = Needy::IMAP.new(self, host, args)
+    thr { yield(i) }
   end
 
   def gmail args, &block
     self.imap_server 'imap.gmail.com', { :port => 993,
                                          :ssl  => true,
                                          :folder => '[Gmail]/Sent Mail' }.merge(args), &block
-  end
-
-  def recipient abbrev, *others
-    recips = [abbrev.to_s] + others.map(&:to_s)
-    query = recips.map{|whom| "TO #{whom}"}.reduce{|memo,q| "OR #{q} #{memo}"}
-    last_id = @@server.search(query).max
-    set abbrev, Time.parse(@@server.fetch(last_id, 'envelope')[0].attr['ENVELOPE'].date)
   end
 
   def feed abbrev, url
@@ -62,6 +52,25 @@ module Needy
   def ichats dir = "#{ENV['HOME']}/Documents/iChats"
     i = Needy::IChat.new(dir, self)
     yield(i)
+  end
+
+  class IMAP
+    attr_accessor :target, :server
+
+    def initialize target, host, args
+      self.target = target
+      args = { :port => 143, :ssl  => false }.merge(args)
+      self.server = Net::IMAP.new host, args[:port], args[:ssl]
+      server.login args[:username], args[:password]
+      server.select args[:folder] if args[:folder]
+    end
+
+    def recipient abbrev, *others
+      recips = [abbrev.to_s] + others.map(&:to_s)
+      query = recips.map{|whom| "TO #{whom}"}.reduce{|memo,q| "OR #{q} #{memo}"}
+      last_id = server.search(query).max
+      target.set abbrev, Time.parse(server.fetch(last_id, 'envelope')[0].attr['ENVELOPE'].date)
+    end
   end
 
   class Git

@@ -43,11 +43,11 @@ Put something like the below in ~/bin/needy
   include Needy
 
   # Your gmail account
-  gmail :username => 'USERNAME@gmail.com', :password => 'PASSWORD' do
-    recipient :aofriend, 'an.old.friend'  # List one recipient per line
-    recipient :buddy                      # When was the last time you emailed buddy?
-    recipient :pal
-    recipient 'client.com'
+  gmail :username => 'USERNAME@gmail.com', :password => 'PASSWORD' do |g|
+    g.recipient :aofriend, 'an.old.friend'  # List one recipient per line
+    g.recipient :buddy                      # When was the last time you emailed buddy?
+    g.recipient :pal
+    g.recipient 'client.com'
   end
 
   # LiveJournal
