@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s| 
   s.name = "needy"
-  s.version = "0.0.2"
+  s.version = "0.0.3"
   s.author = "Matt Liggett"
   s.email = "mml@pobox.com"
   s.homepage = "http://github.com/mml/needy"
