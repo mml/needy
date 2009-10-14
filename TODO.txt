@@ -1,0 +1,8 @@
+- Implement caching
+  - Could start with a basic HTTP caching client that would get 304s rather than
+    200s back from HTTP servers.  Then expand that idea to include SINCE
+    elements in IMAP queries and mtime comparison operators on directories for
+    the iChat things.
+  - Eventually could unify the whole thing in a standard caching interface.
+  - To start: is there an existing Ruby HTTP client library that implements a
+    transparent cache?
